@@ -18,10 +18,11 @@ namespace TagsCloudVisualization
             var bitmap = new Bitmap(right, bottom);
             var drawing = Graphics.FromImage(bitmap);
             drawing.FillRectangle(Brushes.White, new Rectangle(0,0, bitmap.Width, bitmap.Height));
-
+            var random = new Random();
             foreach (var rectangle in rectangles)
             {
-                drawing.FillRectangle(Brushes.Blue, rectangle);
+                var color = Color.FromArgb(random.Next(0, 200), random.Next(0, 200), random.Next(0, 200));
+                drawing.FillRectangle(new SolidBrush(color), rectangle);
             }
 
             return bitmap;

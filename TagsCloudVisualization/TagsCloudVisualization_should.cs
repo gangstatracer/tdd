@@ -20,11 +20,11 @@ namespace TagsCloudVisualization
         public void TearDown()
         {
             var context = TestContext.CurrentContext;
-            if (context.Result.Status == TestStatus.Passed)
+            if (context.Result.Status == TestStatus.Failed)
             {
                 var fileName = $"{context.Test.Name}_{DateTime.Now:yy-MM-dd-HH-mm-ss}.bmp";
                 TagsCloudBitmapWriter.Write(layouter.Rectangles).Save(fileName, ImageFormat.Bmp);
-                Assert.Pass($"Test's layout saved to {fileName}");
+                Assert.Fail($"Test's layout saved to {fileName}");
             }
         }
 
