@@ -16,6 +16,7 @@ namespace TagsCloudVisualization
         }
         private readonly Point center;
         private readonly Func<IList<Rectangle>, Rectangle> getHull = RectangleHullBuilder.GetHull;
+        private readonly List<Rectangle> vacantSpaces = new List<Rectangle>();
 
         public IList<Rectangle> Rectangles { get; } = new List<Rectangle>();
 
@@ -34,17 +35,36 @@ namespace TagsCloudVisualization
             }
             else
             {
-                if (GetEmptySpacesInsideHull().Any())
+                var vacantSpace = vacantSpaces
+                    .Where(vs => vs.Height >= rectangleSize.Height && vs.Width >= rectangleSize.Width)
+                    .OrderBy(vs => vs.X * vs.Y).FirstOrDefault();
+                if (vacantSpace != Rectangle.Empty)
                 {
-                    rectangle = new Rectangle();
+                    vacantSpaces.RemoveAll(vs => vs.Location == vacantSpace.Location);
+                    rectangle = new Rectangle(vacantSpace.Location, rectangleSize);
                 }
                 else
                 {
-                    rectangle = ClingToRectangleMinimizingDistanceToPoint(getHull(Rectangles), center, rectangleSize);
+                    var hull = getHull(Rectangles);
+                    rectangle = ClingToRectangleMinimizingDistanceToPoint(hull, center, rectangleSize);
+                    vacantSpaces.AddRange(FindVacantSpaces(hull, rectangle));
                 }
             }
             Rectangles.Add(rectangle);
             return rectangle;
+        }
+
+        private static IEnumerable<Rectangle> FindVacantSpaces(Rectangle hull, Rectangle rectangle)
+        {
+            var newHull = RectangleHullBuilder.GetHull(new List<Rectangle> {hull, rectangle});
+            foreach (var vertex in newHull.GetVertices()
+                .Where(v => !hull.Contains(v) && !rectangle.Contains(v)))
+            {
+                Func<Point, Point, int> distance = (p, k) => (p.X - k.X) * (p.X - k.X) + (p.Y - k.Y) * (p.Y - k.Y);
+                var oldHullClosestVertex = hull.GetVertices().OrderBy(v => distance(v, vertex)).First();
+                var rectangleTwoClosestVertex = rectangle.GetVertices().OrderBy(v => distance(v, vertex)).First();
+                yield return RectangleExtentions.FromTriangle(Tuple.Create(vertex, oldHullClosestVertex, rectangleTwoClosestVertex));
+            }
         }
 
         internal Rectangle ClingToRectangleMinimizingDistanceToPoint(Rectangle rectangleTo, Point point, Size size)
@@ -91,16 +111,6 @@ namespace TagsCloudVisualization
 
             return new Rectangle(resultLocation, resultSize);
 
-        }
-
-        internal IEnumerable<Rectangle> GetEmptySpacesInsideHull()
-        {
-            //var hull = getHull(Rectangles);
-            //var xGuideLines = new List<int> {hull.Left, hull.Right};
-            //xGuideLines.AddRange(Rectangles.SelectMany(r => new []{r.Left, r.Right}));
-
-            //var yGuideLines = new List<int>();
-            return new List<Rectangle>();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         public void TearDown()
         {
             var context = TestContext.CurrentContext;
-            if (context.Result.Status == TestStatus.Failed)
+            if (context.Result.Status == TestStatus.Passed)
             {
                 var fileName = $"{context.Test.Name}_{DateTime.Now:yy-MM-dd-HH-mm-ss}.bmp";
                 TagsCloudBitmapWriter.Write(layouter.Rectangles).Save(fileName, ImageFormat.Bmp);
@@ -37,13 +37,6 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void ReturnEmptyEnumeration_AfterOnePut()
-        {
-            layouter.PutNextRectange(new Size(55, 101));
-            layouter.GetEmptySpacesInsideHull().Should().BeEmpty();
-        }
-
-        [Test]
         public void PutNextRectangle_AfterOneAdded()
         {
             layouter.PutNextRectange(new Size(20, 10));
@@ -51,10 +44,10 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutLargeAmountOfRectangles()
+        public void PutNextRectangle_LargeAmountOfRectangles()
         {
             var random = new Random();
-            for (var i = 0; i < 1000; i++)
+            for (var i = 0; i < 40; i++)
             {
                 layouter.PutNextRectange(new Size(random.Next(50), random.Next(50)));
             }
