@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
-    internal class TagsCloudVisualization_Should
+    internal class CircularCloudLayouter_Should
     {
         private CircularCloudLayouter layouter;
 
@@ -30,16 +31,33 @@ namespace TagsCloudVisualization
 
 
         [Test]
-        public void PutNextRectange_WhenEmpty()
+        public void PutNextRectangle_WhenEmpty()
         {
             layouter.PutNextRectange(new Size(20, 10)).Should().Be(new Rectangle(90, 95, 20, 10));
         }
 
         [Test]
-        public void PutNextRectange_AfterOneAdded()
+        public void ReturnEmptyEnumeration_AfterOnePut()
+        {
+            layouter.PutNextRectange(new Size(55, 101));
+            layouter.GetEmptySpacesInsideHull().Should().BeEmpty();
+        }
+
+        [Test]
+        public void PutNextRectangle_AfterOneAdded()
         {
             layouter.PutNextRectange(new Size(20, 10));
-            layouter.PutNextRectange(new Size(5, 5)).Should().Be(new Rectangle(90, 95, 20, 10));
+            layouter.PutNextRectange(new Size(5, 5)).Should().Be(new Rectangle(98, 105, 5, 5));
+        }
+
+        [Test]
+        public void PutLargeAmountOfRectangles()
+        {
+            var random = new Random();
+            for (var i = 0; i < 1000; i++)
+            {
+                layouter.PutNextRectange(new Size(random.Next(50), random.Next(50)));
+            }
         }
     }
 }
