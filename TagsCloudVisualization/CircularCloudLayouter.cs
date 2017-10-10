@@ -5,16 +5,6 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public static class RectangleExtensions
-    {
-        public static IEnumerable<Point> GetVertices(this Rectangle rectangle)
-        {
-            yield return rectangle.Location;
-            yield return new Point(rectangle.Right, rectangle.Top);
-            yield return new Point(rectangle.Right, rectangle.Bottom);
-            yield return new Point(rectangle.Left, rectangle.Bottom);
-        }
-    }
     public class CircularCloudLayouter
     {
         private enum Side
@@ -38,7 +28,7 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectange(Size rectangleSize)
         {
-            Rectangle rectangle;
+            Rectangle rectangle = new Rectangle();
             if (!Rectangles.Any())
             {
                 rectangle = new Rectangle(center, rectangleSize);
@@ -50,7 +40,7 @@ namespace TagsCloudVisualization
                 var closestToCenterOuterPoint = outerPoints.First(point => point.Item2 == outerPoints.Min(op => op.Item2));
                 var neighborsOfCloses = outerPoints.OrderBy(op => distance(op.Item1, closestToCenterOuterPoint.Item1))
                     .Take(2);
-                var closestHullSide = neighborsOfCloses.Select(n => )
+                //var closestHullSide = neighborsOfCloses.Select(n => )
             }
             Rectangles.Add(rectangle);
             return rectangle;
