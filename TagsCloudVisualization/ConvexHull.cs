@@ -31,7 +31,6 @@ namespace TagsCloudVisualization
                 previous = next;
                 unvisitedPoints.Remove(next);
             } while (next != start);
-
         }
 
         private static int Rotate(Point a, Point b, Point c)

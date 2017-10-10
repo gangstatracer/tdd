@@ -9,9 +9,11 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
 
-        private readonly Func<IEnumerable<Point>, IEnumerable<Tuple<Point, Point>>> getHull = vertices => ConvexHull.GetSides(vertices);
+        private readonly Func<Point, Point, Point, int> getArea = 
+            (a, b, c) => Math.Abs((a.X - c.X) * (b.Y - c.Y) - (b.X - c.X) * (a.Y - c.Y));
 
-        private readonly Func<Point, Point, Point, int> getArea = (a, b, c) => Math.Abs((a.X - c.X) * (b.Y - c.Y) - (b.X - c.X) * (a.Y - c.Y));
+        private readonly Func<IEnumerable<Point>, IEnumerable<Tuple<Point, Point>>> getHull =
+            vertices => ConvexHull.GetSides(vertices);
 
         public IList<Rectangle> Rectangles { get; } = new List<Rectangle>();
         
@@ -23,7 +25,7 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectange(Size rectangleSize)
         {
-            Rectangle rectangle = new Rectangle();
+            Rectangle rectangle;
             if (!Rectangles.Any())
             {
                 rectangle = new Rectangle(center, rectangleSize);
