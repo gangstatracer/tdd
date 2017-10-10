@@ -56,13 +56,22 @@ namespace TagsCloudVisualization
                 if (a.Y == b.Y)
                 {
                     location = new Point(Math.Abs(a.X - b.X) / 2 + Math.Min(a.X, b.X) - rectangleSize.Width / 2, a.Y);
-                    if(a.Y < center.Y)
+                    if (a.Y < center.Y)
                     {
                         location.Y -= rectangleSize.Height;
                     }
                 }
                 else
                 {
+                    if (b.X < a.X)
+                    {
+                        var s = a;
+                        a = b;
+                        b = s;
+                    }
+                    var lineVector = new Point(b.X - a.X, b.Y - a.Y);
+                    var centerVector = new Point(center.X - a.X, center.Y - a.Y);
+                    var pseudoscalar = (lineVector.X * centerVector.Y) - (lineVector.Y * centerVector.X);
                     location = new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2);
                 }
             }
