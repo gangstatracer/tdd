@@ -18,9 +18,9 @@ namespace TagsCloudVisualization
                 .Should()
                 .BeEquivalentTo(new List<Tuple<Point, Point>>
                 {
-                    Tuple.Create(a,b),
+                    Tuple.Create(a, b),
                     Tuple.Create(b, c),
-                    Tuple.Create(a, c)
+                    Tuple.Create(c, a)
                 });
         }
     }

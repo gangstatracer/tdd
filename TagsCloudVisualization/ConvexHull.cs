@@ -7,11 +7,12 @@ namespace TagsCloudVisualization
 {
     public class ConvexHull
     {
-        public static IEnumerable<Tuple<Point, Point>> GetSides(IList<Point> points)
+        public static IEnumerable<Tuple<Point, Point>> GetSides(IEnumerable<Point> points)
         {
             var unvisitedPoints = points.ToList();
-            var start = points.First(p => p.X == points.Min(pp => pp.X));
+            var start = unvisitedPoints.First(p => p.X == points.Min(pp => pp.X));
             unvisitedPoints.Remove(start);
+            unvisitedPoints.Add(start);
             var previous = start;
             Point next;
             do

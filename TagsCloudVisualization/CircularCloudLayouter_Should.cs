@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_AfterOneAdded()
         {
             layouter.PutNextRectange(new Size(20, 10));
-            layouter.PutNextRectange(new Size(5, 5)).Should().Be(new Rectangle(98, 105, 5, 5));
+            layouter.PutNextRectange(new Size(5, 5)).Should().Be(new Rectangle(98, 90, 5, 5));
         }
 
         [Test]
