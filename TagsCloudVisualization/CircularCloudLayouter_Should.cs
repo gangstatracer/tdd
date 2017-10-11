@@ -48,8 +48,7 @@ namespace TagsCloudVisualization
             layouter.PutNextRectange(new Size(50, 10));
             layouter.PutNextRectange(new Size(5, 5));
             layouter.PutNextRectange(new Size(6, 7));
-            layouter.PutNextRectange(new Size(11, 13));
-            Assert.Fail();
+            layouter.PutNextRectange(new Size(11, 13)).Should().Be(new Rectangle(105, 77, 11, 13));
         }
 
         [Test]
@@ -60,7 +59,6 @@ namespace TagsCloudVisualization
             {
                 layouter.PutNextRectange(new Size(random.Next(50), random.Next(50)));
             }
-            Assert.Fail();
         }
     }
 }

@@ -63,30 +63,28 @@ namespace TagsCloudVisualization
                 {
                     location = segment.Middle;
                     segment.OrderFromLeftToRight();
-                    var lineVector = new Point(segment.Item2.X - segment.Item1.X, segment.Item2.Y - segment.Item1.Y);
-                    var centerVector = new Point(center.X - segment.Item1.X, center.Y - segment.Item1.Y);
-                    var pseudoscalar = lineVector.X * centerVector.Y - lineVector.Y * centerVector.X;
+                    var pseudoscalar = Positioner.Compare(center, segment);
                     if (pseudoscalar == 0)
                     {
                         throw new Exception($"Hull should not contain center. Segment: ({segment.Item1};{segment.Item2}), center: {center}.");
                     }
-                    if (pseudoscalar * (segment.Item2.Y - segment.Item1.Y) < 0)
+                    if (segment.Item2.Y - segment.Item1.Y < 0)
                     {
-                        if (segment.Item2.Y - segment.Item1.Y < 0)
+                        if (pseudoscalar > 0)
                         {
                             location.X -= rectangleSize.Width;
                             location.Y -= rectangleSize.Height;
                         }
+                    }
+                    else
+                    {
+                        if (pseudoscalar > 0)
+                        {
+                            location.Y -= rectangleSize.Height;
+                        }
                         else
                         {
-                            if (pseudoscalar > 0)
-                            {
-                                location.X -= rectangleSize.Width;
-                            }
-                            else
-                            {
-                                location.Y -= rectangleSize.Height;
-                            }
+                            location.X -= rectangleSize.Width;
                         }
                     }
                 }
