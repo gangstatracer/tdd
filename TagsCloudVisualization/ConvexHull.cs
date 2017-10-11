@@ -7,10 +7,10 @@ namespace TagsCloudVisualization
 {
     public class ConvexHull
     {
-        public static IEnumerable<Tuple<Point, Point>> GetSides(IEnumerable<Point> points)
+        public static IEnumerable<Segment> GetSides(IEnumerable<Point> points)
         {
             var unvisitedPoints = points.ToList();
-            var start = unvisitedPoints.First(p => p.X == points.Min(pp => pp.X));
+            var start = unvisitedPoints.First(p => p.X == unvisitedPoints.Min(pp => pp.X));
             unvisitedPoints.Remove(start);
             unvisitedPoints.Add(start);
             var previous = start;
@@ -20,22 +20,15 @@ namespace TagsCloudVisualization
                 next = unvisitedPoints.First();
                 foreach (var point in unvisitedPoints.Skip(1))
                 {
-                    if (Rotate(previous, next, point) >= 0)
+                    if(Positioner.Compare(point, new Segment(previous, next)) < 0)
                     {
-                        continue;
+                        next = point;
                     }
-                    next = point;
-                    break;
                 }
-                yield return Tuple.Create(previous, next);
+                yield return new Segment(previous, next);
                 previous = next;
                 unvisitedPoints.Remove(next);
             } while (next != start);
-        }
-
-        private static int Rotate(Point a, Point b, Point c)
-        {
-            return (b.X - a.X) * (c.Y - b.Y) - (b.Y - a.Y) * (c.X - b.X);
         }
     }
 }

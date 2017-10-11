@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
@@ -14,19 +13,19 @@ namespace TagsCloudVisualization
             var a = new Point(3, 7);
             ConvexHull.GetSides(new[] {a})
                 .Should()
-                .Equal(Tuple.Create(a, a));
+                .Equal(new Segment(a, a));
         }
         [Test]
         public void BuildSegment_OnTwoPoints()
         {
             var a = new Point(10, 10);
             var b = new Point(1, 2);
-            ConvexHull.GetSides(new[] { a, b})
+            ConvexHull.GetSides(new[] { a, b })
                 .Should()
-                .BeEquivalentTo(new List<Tuple<Point, Point>>
+                .Equal(new List<Segment>
                 {
-                    Tuple.Create(b, a),
-                    Tuple.Create(a, b)
+                    new Segment(b, a),
+                    new Segment(a, b)
                 });
         }
         [Test]
@@ -37,11 +36,11 @@ namespace TagsCloudVisualization
             var c = new Point(-4, -7);
             ConvexHull.GetSides(new[] {a, b, c})
                 .Should()
-                .BeEquivalentTo(new List<Tuple<Point, Point>>
+                .BeEquivalentTo(new List<Segment>
                 {
-                    Tuple.Create(a, b),
-                    Tuple.Create(b, c),
-                    Tuple.Create(c, a)
+                    new Segment(a, b),
+                    new Segment(b, c),
+                    new Segment(c, a)
                 });
         }
 
@@ -54,11 +53,29 @@ namespace TagsCloudVisualization
             var d = new Point(1, 1);
             ConvexHull.GetSides(new[] { a, b, c, d })
                 .Should()
-                .BeEquivalentTo(new List<Tuple<Point, Point>>
+                .BeEquivalentTo(new List<Segment>
                 {
-                    Tuple.Create(a, c),
-                    Tuple.Create(c, b),
-                    Tuple.Create(b, a)
+                    new Segment(a, c),
+                    new Segment(c, b),
+                    new Segment(b, a)
+                });
+        }
+
+        [Test]
+        public void BuildSquare_OnFivePoints()
+        {
+            var a = new Point(0, 0);
+            var b = new Point(0, 2);
+            var c = new Point(2, 0);
+            var d = new Point(2, 2);
+            ConvexHull.GetSides(new[] { a, b, c, d, new Point(1, 1) })
+                .Should()
+                .BeEquivalentTo(new List<Segment>
+                {
+                    new Segment(a, b),
+                    new Segment(b, d),
+                    new Segment(d, c),
+                    new Segment(c, a)
                 });
         }
     }

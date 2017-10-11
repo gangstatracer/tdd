@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -44,13 +43,24 @@ namespace TagsCloudVisualization
         }
 
         [Test]
+        public void PutOnDiagonalSide_AfterThreeAdded()
+        {
+            layouter.PutNextRectange(new Size(50, 10));
+            layouter.PutNextRectange(new Size(5, 5));
+            layouter.PutNextRectange(new Size(6, 7));
+            layouter.PutNextRectange(new Size(11, 13));
+            Assert.Fail();
+        }
+
+        [Test]
         public void PutNextRectangle_LargeAmountOfRectangles()
         {
             var random = new Random();
-            for (var i = 0; i < 40; i++)
+            for (var i = 0; i < 100; i++)
             {
                 layouter.PutNextRectange(new Size(random.Next(50), random.Next(50)));
             }
+            Assert.Fail();
         }
     }
 }

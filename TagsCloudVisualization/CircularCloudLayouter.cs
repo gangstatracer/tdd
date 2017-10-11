@@ -9,10 +9,7 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
 
-        private readonly Func<Point, Point, Point, int> getArea = 
-            (a, b, c) => Math.Abs((a.X - c.X) * (b.Y - c.Y) - (b.X - c.X) * (a.Y - c.Y));
-
-        private readonly Func<IEnumerable<Point>, IEnumerable<Tuple<Point, Point>>> getHull =
+        private readonly Func<IEnumerable<Point>, IEnumerable<Segment>> getHull =
             vertices => ConvexHull.GetSides(vertices);
 
         public IList<Rectangle> Rectangles { get; } = new List<Rectangle>();
@@ -33,48 +30,65 @@ namespace TagsCloudVisualization
             }
             else
             {
-                var hullWithDistances = getHull(Rectangles.SelectMany(r => r.GetVertices()))
-                    .Select(side => Tuple.Create(side, getArea(side.Item1, side.Item2, center))).ToList();
-                var closestSide = hullWithDistances.First(h => h.Item2 == hullWithDistances.Min(hh => hh.Item2)).Item1;
-                rectangle = ClingToSegment(closestSide.Item1, closestSide.Item2, rectangleSize);
+                var hull = getHull(Rectangles.SelectMany(r => r.GetVertices())).ToList();
+                var closestSide = hull.First(h => h.DistanceTo(center) == hull.Min(hh => hh.DistanceTo(center)));
+                rectangle = ClingToSegment(closestSide, rectangleSize);
             }
             Rectangles.Add(rectangle);
             return rectangle;
         }
 
-        private Rectangle ClingToSegment(Point a, Point b, Size rectangleSize)
+        private Rectangle ClingToSegment(Segment segment, Size rectangleSize)
         {
             Point location;
-            if (a.X == b.X)
+            if (segment.IsVertical)
             {
-                location = new Point(a.X, Math.Abs(a.Y - b.Y) / 2 + Math.Min(a.Y, b.Y) + rectangleSize.Height / 2);
-                if (a.X < center.X)
+                location = new Point(segment.Item1.X, Math.Abs(segment.Item1.Y - segment.Item2.Y) / 2 + Math.Min(segment.Item1.Y, segment.Item2.Y) - rectangleSize.Height / 2);
+                if (segment.Item1.X < center.X)
                 {
                     location.X -= rectangleSize.Width;
                 }
             }
             else
             {
-                if (a.Y == b.Y)
+                if (segment.IsHorizontal)
                 {
-                    location = new Point(Math.Abs(a.X - b.X) / 2 + Math.Min(a.X, b.X) - rectangleSize.Width / 2, a.Y);
-                    if (a.Y < center.Y)
+                    location = new Point(Math.Abs(segment.Item1.X - segment.Item2.X) / 2 + Math.Min(segment.Item1.X, segment.Item2.X) - rectangleSize.Width / 2, segment.Item1.Y);
+                    if (segment.Item1.Y < center.Y)
                     {
                         location.Y -= rectangleSize.Height;
                     }
                 }
                 else
                 {
-                    if (b.X < a.X)
+                    location = segment.Middle;
+                    segment.OrderFromLeftToRight();
+                    var lineVector = new Point(segment.Item2.X - segment.Item1.X, segment.Item2.Y - segment.Item1.Y);
+                    var centerVector = new Point(center.X - segment.Item1.X, center.Y - segment.Item1.Y);
+                    var pseudoscalar = lineVector.X * centerVector.Y - lineVector.Y * centerVector.X;
+                    if (pseudoscalar == 0)
                     {
-                        var s = a;
-                        a = b;
-                        b = s;
+                        throw new Exception($"Hull should not contain center. Segment: ({segment.Item1};{segment.Item2}), center: {center}.");
                     }
-                    var lineVector = new Point(b.X - a.X, b.Y - a.Y);
-                    var centerVector = new Point(center.X - a.X, center.Y - a.Y);
-                    var pseudoscalar = (lineVector.X * centerVector.Y) - (lineVector.Y * centerVector.X);
-                    location = new Point((a.X + b.X) / 2, (a.Y + b.Y) / 2);
+                    if (pseudoscalar * (segment.Item2.Y - segment.Item1.Y) < 0)
+                    {
+                        if (segment.Item2.Y - segment.Item1.Y < 0)
+                        {
+                            location.X -= rectangleSize.Width;
+                            location.Y -= rectangleSize.Height;
+                        }
+                        else
+                        {
+                            if (pseudoscalar > 0)
+                            {
+                                location.X -= rectangleSize.Width;
+                            }
+                            else
+                            {
+                                location.Y -= rectangleSize.Height;
+                            }
+                        }
+                    }
                 }
             }
             return new Rectangle(location, rectangleSize);
