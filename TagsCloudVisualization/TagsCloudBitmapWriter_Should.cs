@@ -9,7 +9,7 @@ namespace TagsCloudVisualization
     internal class TagsCloudBitmapWriter_Should
     {
         [Test]
-        public void OneRectangle()
+        public void Write_OneRectangle()
         {
             var bitmap = TagsCloudBitmapWriter
                 .Write(new List<Rectangle> {new Rectangle(0, 0, 100, 37)});
