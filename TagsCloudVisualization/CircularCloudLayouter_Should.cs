@@ -28,7 +28,6 @@ namespace TagsCloudVisualization
             }
         }
 
-
         [Test]
         public void PutNextRectangle_WhenEmpty()
         {
